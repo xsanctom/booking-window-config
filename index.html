@@ -78,18 +78,48 @@
                     <div class="section-content">
                         <div class="section-description">What's the minimum advance notice required?</div>
                         
-                        <div class="input-row">
-                            <input type="number" class="form-input" id="closest-number" min="0" max="999" value="1" placeholder="1">
-                            <select class="form-select" id="closest-unit">
-                                <option value="days">Days</option>
-                                <option value="hours">Hours</option>
-                                <option value="minutes">Minutes</option>
+                        <!-- Closest Booking Mode Selector -->
+                        <div class="unlock-type-selector">
+                            <button type="button" class="unlock-type-button active" id="closest-same-day" data-type="same-day">
+                                <div class="unlock-type-label">Same-Day Booking</div>
+                                <div class="unlock-type-description">Accept bookings with short notice (hours)</div>
+                            </button>
+                            <button type="button" class="unlock-type-button" id="closest-advance" data-type="advance">
+                                <div class="unlock-type-label">Advance Booking</div>
+                                <div class="unlock-type-description">Require booking days in advance</div>
+                            </button>
+                        </div>
+                        
+                        <!-- Time Increment Selector (for Same-Day mode) -->
+                        <div class="input-row" id="closest-same-day-controls">
+                            <select class="form-select" id="closest-time-increment">
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="120">2 hours</option>
+                                <option value="180">3 hours</option>
+                                <option value="240">4 hours</option>
+                                <option value="300">5 hours</option>
+                                <option value="360">6 hours</option>
+                                <option value="420">7 hours</option>
+                                <option value="480">8 hours</option>
+                                <option value="540">9 hours</option>
+                                <option value="600">10 hours</option>
+                                <option value="660">11 hours</option>
+                                <option value="720">12 hours</option>
+                                <option value="1080">18 hours</option>
                             </select>
                         </div>
                         
+                        <!-- Days Input (for Advance mode) -->
+                        <div class="input-row hidden" id="closest-advance-controls">
+                            <input type="number" class="form-input" id="closest-days" min="1" max="999" value="1" placeholder="1">
+                            <span class="input-label">Days</span>
+                        </div>
+                        
                         <div class="alert alert-tertiary" id="closest-preview">
-                            Closest booking right now would be <strong>Tuesday</strong>.<br>
-                            The cut-off time for bookings on Tuesday is <strong>tomorrow</strong> at <strong>10:00</strong>.
+                            Earliest booking right now would be at <strong>14:45</strong>.
                         </div>
                     </div>
                 </div>
@@ -160,17 +190,48 @@
                     <div class="section-content">
                         <div class="section-description">必要な最短事前通知期間は？</div>
                         
-                        <div class="input-row">
-                            <input type="number" class="form-input" id="closest-number-ja" min="0" max="999" value="1" placeholder="1">
-                            <select class="form-select" id="closest-unit-ja">
-                                <option value="days">日</option>
-                                <option value="hours">時間</option>
-                                <option value="minutes">分</option>
+                        <!-- Closest Booking Mode Selector -->
+                        <div class="unlock-type-selector">
+                            <button type="button" class="unlock-type-button active" id="closest-same-day-ja" data-type="same-day">
+                                <div class="unlock-type-label">当日予約</div>
+                                <div class="unlock-type-description">短時間での予約を受け付ける</div>
+                            </button>
+                            <button type="button" class="unlock-type-button" id="closest-advance-ja" data-type="advance">
+                                <div class="unlock-type-label">事前予約</div>
+                                <div class="unlock-type-description">日数での事前予約が必要</div>
+                            </button>
+                        </div>
+                        
+                        <!-- Time Increment Selector (for Same-Day mode) -->
+                        <div class="input-row" id="closest-same-day-controls-ja">
+                            <select class="form-select" id="closest-time-increment-ja">
+                                <option value="15">15分</option>
+                                <option value="30">30分</option>
+                                <option value="45">45分</option>
+                                <option value="60">1時間</option>
+                                <option value="120">2時間</option>
+                                <option value="180">3時間</option>
+                                <option value="240">4時間</option>
+                                <option value="300">5時間</option>
+                                <option value="360">6時間</option>
+                                <option value="420">7時間</option>
+                                <option value="480">8時間</option>
+                                <option value="540">9時間</option>
+                                <option value="600">10時間</option>
+                                <option value="660">11時間</option>
+                                <option value="720">12時間</option>
+                                <option value="1080">18時間</option>
                             </select>
                         </div>
                         
+                        <!-- Days Input (for Advance mode) -->
+                        <div class="input-row hidden" id="closest-advance-controls-ja">
+                            <input type="number" class="form-input" id="closest-days-ja" min="1" max="999" value="1" placeholder="1">
+                            <span class="input-label">日</span>
+                        </div>
+                        
                         <div class="alert alert-tertiary" id="closest-preview-ja">
-                            現在の最短予約可能日は<strong>火曜日</strong>です。
+                            現在の最短予約可能時刻は<strong>14:45</strong>です。
                         </div>
                     </div>
                 </div>

@@ -8,8 +8,9 @@ let bookingConfig = {
         unit: 'months' // 'days' or 'months'
     },
     closest: {
-        number: 1,
-        unit: 'days' // 'days', 'hours', or 'minutes'
+        mode: 'same-day', // 'same-day' or 'advance'
+        timeIncrement: 15, // minutes for same-day mode
+        days: 1 // for advance mode
     }
 };
 
@@ -176,19 +177,22 @@ function setupFormHandlers(lang) {
     const furthestUnit = document.getElementById('furthest-unit' + suffix);
 
     // Closest booking inputs
-    const closestNumber = document.getElementById('closest-number' + suffix);
-    const closestUnit = document.getElementById('closest-unit' + suffix);
+    const closestSameDayBtn = document.getElementById('closest-same-day' + suffix);
+    const closestAdvanceBtn = document.getElementById('closest-advance' + suffix);
+    const closestTimeIncrement = document.getElementById('closest-time-increment' + suffix);
+    const closestDays = document.getElementById('closest-days' + suffix);
 
     // Add event listeners with debounced preview updates
     const debouncedUpdate = debounce(() => updatePreviews(lang), 300);
 
-    // Unlock type selector
+    // Furthest: Unlock type selector
     if (unlockDaysBtn) {
         unlockDaysBtn.addEventListener('click', function() {
             bookingConfig.furthest.unlockType = 'days';
-            const modal = document.getElementById('booking-window-modal' + suffix);
+            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
             if (modal) {
-                modal.querySelectorAll('.unlock-type-button').forEach(btn => btn.classList.remove('active'));
+                const furthestButtons = modal.querySelectorAll('#unlock-days' + suffix + ', #unlock-months' + suffix);
+                furthestButtons.forEach(btn => btn.classList.remove('active'));
             }
             this.classList.add('active');
             updateConditionalFields(lang);
@@ -199,9 +203,10 @@ function setupFormHandlers(lang) {
     if (unlockMonthsBtn) {
         unlockMonthsBtn.addEventListener('click', function() {
             bookingConfig.furthest.unlockType = 'months';
-            const modal = document.getElementById('booking-window-modal' + suffix);
+            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
             if (modal) {
-                modal.querySelectorAll('.unlock-type-button').forEach(btn => btn.classList.remove('active'));
+                const furthestButtons = modal.querySelectorAll('#unlock-days' + suffix + ', #unlock-months' + suffix);
+                furthestButtons.forEach(btn => btn.classList.remove('active'));
             }
             this.classList.add('active');
             updateConditionalFields(lang);
@@ -223,16 +228,45 @@ function setupFormHandlers(lang) {
         });
     }
 
-    if (closestNumber) {
-        closestNumber.addEventListener('input', function() {
-            bookingConfig.closest.number = parseInt(this.value) || 0;
+    // Closest: Mode selector
+    if (closestSameDayBtn) {
+        closestSameDayBtn.addEventListener('click', function() {
+            bookingConfig.closest.mode = 'same-day';
+            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
+            if (modal) {
+                const closestButtons = modal.querySelectorAll('#closest-same-day' + suffix + ', #closest-advance' + suffix);
+                closestButtons.forEach(btn => btn.classList.remove('active'));
+            }
+            this.classList.add('active');
+            updateConditionalFields(lang);
             debouncedUpdate();
         });
     }
 
-    if (closestUnit) {
-        closestUnit.addEventListener('change', function() {
-            bookingConfig.closest.unit = this.value;
+    if (closestAdvanceBtn) {
+        closestAdvanceBtn.addEventListener('click', function() {
+            bookingConfig.closest.mode = 'advance';
+            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
+            if (modal) {
+                const closestButtons = modal.querySelectorAll('#closest-same-day' + suffix + ', #closest-advance' + suffix);
+                closestButtons.forEach(btn => btn.classList.remove('active'));
+            }
+            this.classList.add('active');
+            updateConditionalFields(lang);
+            debouncedUpdate();
+        });
+    }
+
+    if (closestTimeIncrement) {
+        closestTimeIncrement.addEventListener('change', function() {
+            bookingConfig.closest.timeIncrement = parseInt(this.value);
+            debouncedUpdate();
+        });
+    }
+
+    if (closestDays) {
+        closestDays.addEventListener('input', function() {
+            bookingConfig.closest.days = parseInt(this.value) || 1;
             debouncedUpdate();
         });
     }
@@ -245,6 +279,8 @@ function setupConditionalFields(lang) {
 
 function updateConditionalFields(lang) {
     const suffix = lang === 'ja' ? '-ja' : '';
+    
+    // Furthest booking fields
     const furthestUnit = document.getElementById('furthest-unit' + suffix);
     const unlockType = bookingConfig.furthest.unlockType;
     
@@ -274,6 +310,19 @@ function updateConditionalFields(lang) {
             bookingConfig.furthest.unit = 'months';
         }
     }
+    
+    // Closest booking fields
+    const closestMode = bookingConfig.closest.mode;
+    const sameDayControls = document.getElementById('closest-same-day-controls' + suffix);
+    const advanceControls = document.getElementById('closest-advance-controls' + suffix);
+    
+    if (closestMode === 'same-day') {
+        if (sameDayControls) sameDayControls.classList.remove('hidden');
+        if (advanceControls) advanceControls.classList.add('hidden');
+    } else if (closestMode === 'advance') {
+        if (sameDayControls) sameDayControls.classList.add('hidden');
+        if (advanceControls) advanceControls.classList.remove('hidden');
+    }
 }
 
 // Booking Window Calculation Logic
@@ -284,15 +333,12 @@ function calculateEarliestBooking() {
     
     let earliestDate = new Date(now);
     
-    if (config.unit === 'days') {
+    if (config.mode === 'same-day') {
+        // Add the time increment in minutes
+        earliestDate.setTime(now.getTime() + (config.timeIncrement * 60 * 1000));
+    } else if (config.mode === 'advance') {
         // Add the minimum days
-        earliestDate.setDate(now.getDate() + config.number);
-    } else if (config.unit === 'hours') {
-        // Add the minimum hours
-        earliestDate.setTime(now.getTime() + (config.number * 60 * 60 * 1000));
-    } else if (config.unit === 'minutes') {
-        // Add the minimum minutes
-        earliestDate.setTime(now.getTime() + (config.number * 60 * 1000));
+        earliestDate.setDate(now.getDate() + config.days);
     }
     
     return earliestDate;
@@ -465,26 +511,36 @@ function updateClosestPreview(earliestDate, lang) {
     
     let previewText = '';
     
-    if (config.unit === 'minutes') {
-        const timeFormatted = roundedDate.toLocaleTimeString(lang === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        if (lang === 'ja') {
-            previewText = `現在の最短予約可能時刻は<strong>${timeFormatted}</strong>です。`;
+    if (config.mode === 'same-day') {
+        // Check if it's still same day or crosses to next day
+        const isSameDay = roundedDate.getDate() === now.getDate() && 
+                         roundedDate.getMonth() === now.getMonth() && 
+                         roundedDate.getFullYear() === now.getFullYear();
+        
+        if (isSameDay) {
+            // Show just the time
+            const timeFormatted = roundedDate.toLocaleTimeString(lang === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            if (lang === 'ja') {
+                previewText = `現在の最短予約可能時刻は<strong>${timeFormatted}</strong>です。`;
+            } else {
+                previewText = `Earliest booking right now would be at <strong>${timeFormatted}</strong>.`;
+            }
         } else {
-            previewText = `Earliest booking right now would be at <strong>${timeFormatted}</strong>.`;
+            // Show date and time
+            const dateTimeFormatted = roundedDate.toLocaleString(lang === 'ja' ? 'ja-JP' : 'en-US', { 
+                weekday: 'long', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+            });
+            if (lang === 'ja') {
+                previewText = `現在の最短予約可能時刻は<strong>${dateTimeFormatted}</strong>です。`;
+            } else {
+                previewText = `Earliest booking right now would be <strong>${dateTimeFormatted}</strong>.`;
+            }
         }
-    } else if (config.unit === 'hours') {
-        const dateTimeFormatted = roundedDate.toLocaleString(lang === 'ja' ? 'ja-JP' : 'en-US', { 
-            weekday: 'long', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            hour12: false 
-        });
-        if (lang === 'ja') {
-            previewText = `現在の最短予約可能時刻は<strong>${dateTimeFormatted}</strong>です。`;
-        } else {
-            previewText = `Earliest booking right now would be <strong>${dateTimeFormatted}</strong>.`;
-        }
-    } else if (config.unit === 'days') {
+    } else if (config.mode === 'advance') {
+        // Show the date
         const dateFormatted = roundedDate.toLocaleDateString(lang === 'ja' ? 'ja-JP' : 'en-US', { 
             weekday: 'long',
             month: 'long',
