@@ -1,0 +1,485 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--surface-low);
+    color: var(--text);
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* Test Container */
+.test-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 100vh;
+    padding: 24px;
+}
+
+/* Button Styles */
+.button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    height: 40px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.button:hover {
+    background-color: var(--surface-hover);
+}
+
+.button.primary {
+    background-color: var(--brand-primary);
+    color: var(--brand-primary-text);
+    border-color: var(--brand-primary);
+}
+
+.button.primary:hover {
+    background-color: var(--brand-primary-hover);
+    border-color: var(--brand-primary-hover);
+}
+
+.button.secondary {
+    background-color: var(--surface);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.button.secondary:hover {
+    background-color: var(--surface-hover);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--backdrop);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 48px 0;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* Booking Window Modal Content */
+.booking-window-modal-content {
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    width: 600px;
+    max-width: calc(100vw - 48px);
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    height: 64px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    background: var(--surface-raised);
+    border: none;
+    font-size: 16px;
+    color: var(--text-subtle);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background-color: var(--surface-raised-hover);
+    color: var(--text);
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Booking Section */
+.booking-section {
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.section-header {
+    margin-bottom: 4px;
+}
+
+.section-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.section-description {
+    font-size: 14px;
+    color: var(--text-subtle);
+    margin: 0;
+}
+
+.input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 50%;
+}
+
+.input-row .form-input {
+    flex: 1;
+    min-width: 80px;
+}
+
+.input-row .form-select {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Unlock Type Selector */
+.unlock-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.unlock-type-button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.unlock-type-button:hover {
+    background-color: var(--surface-hover);
+    border-color: var(--border-active);
+}
+
+.unlock-type-button.active {
+    background-color: var(--purple-surface);
+    border-color: var(--brand-primary);
+}
+
+.unlock-type-button.active .unlock-type-label {
+    color: var(--text);
+}
+
+.unlock-type-button.active .unlock-type-description {
+    color: var(--text);
+}
+
+.unlock-type-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    margin-bottom: 4px;
+}
+
+.unlock-type-description {
+    font-size: 12px;
+    color: var(--text-subtle);
+    line-height: 1.3;
+}
+
+/* Alert Component */
+.alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.alert strong {
+    font-weight: 500;
+}
+
+.alert-tertiary {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.alert-tertiary strong {
+    color: var(--text);
+}
+
+/* Advanced Options (for Closest Booking) */
+.advanced-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toggle-options-link {
+    background: none;
+    border: none;
+    color: var(--link);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    margin-top: 8px;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.toggle-options-link:hover {
+    color: var(--link-hover);
+}
+
+.advanced-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.checkbox-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand-primary);
+}
+
+.checkbox-content {
+    margin-left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Form Fields */
+.form-input,
+.form-select {
+    padding: 8px 12px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background-color: var(--field);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--border-active);
+    box-shadow: 0 0 0 2px var(--focus);
+}
+
+.form-input::placeholder {
+    color: var(--text-placeholder);
+}
+
+.form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--toggle-inactive);
+    transition: 0.2s;
+    border-radius: 24px;
+}
+
+.toggle-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+}
+
+.toggle-switch-input:checked + .toggle-switch-slider {
+    background-color: var(--brand-primary);
+}
+
+.toggle-switch-input:checked + .toggle-switch-slider:before {
+    transform: translateX(20px);
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .booking-window-modal-content {
+        width: 100%;
+        max-width: 100vw;
+        margin: 12px;
+    }
+    
+    .modal-body {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .configuration-panel {
+        width: 100%;
+    }
+    
+    .preview-panel {
+        width: 100%;
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-field-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .number-unit-input {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .toggle-switch-content {
+        padding-left: 0;
+    }
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Window Configuration</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="design-tokens.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Test Buttons to Open Modal -->
+    <div class="test-container">
+        <button class="button secondary" id="open-booking-modal-en">
+            Configure Booking Window (EN)
+        </button>
+        <button class="button secondary" id="open-booking-modal-ja">
+            予約期間設定 (JA)
+        </button>
+    </div>
+
+    <!-- Booking Window Configuration Modal -->
+    <div class="modal-overlay" id="booking-window-modal">
+        <div class="booking-window-modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>Booking Window Configuration</h2>
+                <button class="modal-close" id="close-booking-modal">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Furthest Booking Section -->
+                <div class="booking-section">
+                    <div class="section-header">
+                        <h3>Furthest Booking</h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="section-description">How far ahead can customers book?</div>
+                        
+                        <!-- Unlock Type Selector -->
+                        <div class="unlock-type-selector">
+                            <button type="button" class="unlock-type-button active" id="unlock-days" data-type="days">
+                                <div class="unlock-type-label">Unlock Daily</div>
+                                <div class="unlock-type-description">New days become available each day</div>
+                            </button>
+                            <button type="button" class="unlock-type-button" id="unlock-months" data-type="months">
+                                <div class="unlock-type-label">Unlock Monthly</div>
+                                <div class="unlock-type-description">Full months unlock on the 1st</div>
+                            </button>
+                        </div>
+                        
+                        <!-- Time in Advance -->
+                        <div class="input-row">
+                            <input type="number" class="form-input" id="furthest-number" min="1" max="999" value="1" placeholder="1">
+                            <select class="form-select" id="furthest-unit">
+                                <option value="months">Months</option>
+                                <option value="days">Days</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-tertiary" id="furthest-preview">
+                            Furthest booking right now would be <strong>December 31st</strong>.<br>
+                            The booking window advances by 1 day each day at midnight.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Closest Booking Section -->
+                <div class="booking-section">
+                    <div class="section-header">
+                        <h3>Closest Booking</h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="section-description">What's the minimum advance notice required?</div>
+                        
+                        <div class="input-row">
+                            <input type="number" class="form-input" id="closest-number" min="0" max="999" value="1" placeholder="1">
+                            <select class="form-select" id="closest-unit">
+                                <option value="days">Days</option>
+                                <option value="hours">Hours</option>
+                                <option value="minutes">Minutes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-tertiary" id="closest-preview">
+                            Closest booking right now would be <strong>Tuesday</strong>.<br>
+                            The cut-off time for bookings on Tuesday is <strong>tomorrow</strong> at <strong>10:00</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="button secondary" id="cancel-booking-config">Cancel</button>
+                <button class="button primary" id="save-booking-config">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Japanese Booking Window Configuration Modal -->
+    <div class="modal-overlay" id="booking-window-modal-ja">
+        <div class="booking-window-modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h2>予約期間設定</h2>
+                <button class="modal-close" id="close-booking-modal-ja">&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Furthest Booking Section -->
+                <div class="booking-section">
+                    <div class="section-header">
+                        <h3>最長予約期間</h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="section-description">どのくらい先まで予約できますか？</div>
+                        
+                        <!-- Unlock Type Selector -->
+                        <div class="unlock-type-selector">
+                            <button type="button" class="unlock-type-button active" id="unlock-days-ja" data-type="days">
+                                <div class="unlock-type-label">日次解除</div>
+                                <div class="unlock-type-description">毎日新しい日が利用可能になります</div>
+                            </button>
+                            <button type="button" class="unlock-type-button" id="unlock-months-ja" data-type="months">
+                                <div class="unlock-type-label">月次解除</div>
+                                <div class="unlock-type-description">毎月1日に月全体が解除されます</div>
+                            </button>
+                        </div>
+                        
+                        <!-- Time in Advance -->
+                        <div class="input-row">
+                            <input type="number" class="form-input" id="furthest-number-ja" min="1" max="999" value="1" placeholder="1">
+                            <select class="form-select" id="furthest-unit-ja">
+                                <option value="months">月</option>
+                                <option value="days">日</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-tertiary" id="furthest-preview-ja">
+                            現在の最長予約可能日は<strong>12月31日</strong>です。<br>
+                            予約枠は毎日深夜0時に1日分ずつ追加されます。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Closest Booking Section -->
+                <div class="booking-section">
+                    <div class="section-header">
+                        <h3>最短予約期間</h3>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="section-description">必要な最短事前通知期間は？</div>
+                        
+                        <div class="input-row">
+                            <input type="number" class="form-input" id="closest-number-ja" min="0" max="999" value="1" placeholder="1">
+                            <select class="form-select" id="closest-unit-ja">
+                                <option value="days">日</option>
+                                <option value="hours">時間</option>
+                                <option value="minutes">分</option>
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-tertiary" id="closest-preview-ja">
+                            現在の最短予約可能日は<strong>火曜日</strong>です。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button class="button secondary" id="cancel-booking-config-ja">キャンセル</button>
+                <button class="button primary" id="save-booking-config-ja">設定を保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
