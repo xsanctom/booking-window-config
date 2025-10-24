@@ -109,7 +109,7 @@ body {
     padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 }
 
 .content-intro {
@@ -132,6 +132,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
 }
 
 .section-header {
@@ -279,7 +283,10 @@ body {
 
 /* Toggle Section */
 .toggle-section {
-    margin-top: 8px;
+    background-color: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
 }
 
 .toggle-container {
