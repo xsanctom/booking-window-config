@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Window Configuration</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <title>Booking Configuration</title>
     <link rel="stylesheet" href="design-tokens.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Test Buttons to Open Modal -->
-    <div class="test-container">
+    <!-- Language Selection Buttons -->
+    <div class="language-selection">
         <button class="button secondary" id="open-booking-modal-en">
             Configure Booking Window (EN)
         </button>
@@ -21,9 +21,9 @@
         </button>
     </div>
 
-    <!-- Booking Window Configuration Modal -->
+    <!-- English Booking Configuration Modal -->
     <div class="modal-overlay" id="booking-window-modal">
-        <div class="booking-window-modal-content">
+        <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
                 <h2>Booking Window Configuration</h2>
@@ -33,95 +33,115 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <!-- Furthest Booking Section -->
-                <div class="booking-section">
+                <div class="config-section">
                     <div class="section-header">
-                        <h3>Furthest Booking</h3>
+                        <label>Furthest Booking</label>
+                        <p class="section-description">How far ahead can customers book?</p>
                     </div>
-                    
-                    <div class="section-content">
-                        <div class="section-description">How far ahead can customers book?</div>
-                        
-                        <!-- Unlock Type Selector -->
-                        <div class="unlock-type-selector">
-                            <button type="button" class="unlock-type-button active" id="unlock-days" data-type="days">
-                                <div class="unlock-type-label">Day-by-Day</div>
-                                <div class="unlock-type-description">New days become available each day</div>
-                            </button>
-                            <button type="button" class="unlock-type-button" id="unlock-months" data-type="months">
-                                <div class="unlock-type-label">Month-by-Month</div>
-                                <div class="unlock-type-description">Full months unlock on the 1st</div>
-                            </button>
-                        </div>
-                        
-                        <!-- Time in Advance -->
-                        <div class="input-row">
-                            <input type="number" class="form-input" id="furthest-number" min="1" max="999" value="1" placeholder="1">
-                            <select class="form-select" id="furthest-unit">
-                                <option value="months">Months</option>
-                                <option value="days">Days</option>
-                            </select>
-                        </div>
-                        
-                        <div class="alert alert-tertiary" id="furthest-preview">
-                            Furthest booking right now would be <strong>December 31st</strong>.<br>
-                            The booking window advances by 1 day each day at midnight.
-                        </div>
+
+                    <!-- Radio Button Options -->
+                    <div class="radio-options">
+                        <label class="radio-option active" id="daily-update-option">
+                            <div class="radio-content">
+                                <span class="radio-label">Update Daily</span>
+                                <span class="radio-description">New days become available each day.</span>
+                            </div>
+                        </label>
+                        <label class="radio-option" id="monthly-update-option">
+                            <div class="radio-content">
+                                <span class="radio-label">Update Monthly</span>
+                                <span class="radio-description">Full months unlock on the 1st of each month.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Input Row -->
+                    <div class="input-row">
+                        <input type="number" class="form-input" id="furthest-number" min="1" max="999" value="2" placeholder="2">
+                        <select class="form-select" id="furthest-unit">
+                            <option value="months">Months</option>
+                            <option value="days">Days</option>
+                        </select>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="preview-box" id="furthest-preview">
+                        Furthest booking right now would be <strong>November 22</strong>.<br>
+                        The booking window advances by 1 day each day at midnight.
                     </div>
                 </div>
 
+                <div class="divider"></div>
+
                 <!-- Closest Booking Section -->
-                <div class="booking-section">
+                <div class="config-section">
                     <div class="section-header">
-                        <h3>Closest Booking</h3>
+                        <label>Closest Booking</label>
+                        <p class="section-description">What's the minimum advance notice required?</p>
                     </div>
-                    
-                    <div class="section-content">
-                        <div class="section-description">What's the minimum advance notice required?</div>
-                        
-                        <!-- Closest Booking Mode Selector -->
-                        <div class="unlock-type-selector">
-                            <button type="button" class="unlock-type-button active" id="closest-same-day" data-type="same-day">
-                                <div class="unlock-type-label">Same-Day Booking</div>
-                                <div class="unlock-type-description">Accept bookings with short notice (hours)</div>
-                            </button>
-                            <button type="button" class="unlock-type-button" id="closest-advance" data-type="advance">
-                                <div class="unlock-type-label">Advance Booking</div>
-                                <div class="unlock-type-description">Require booking days in advance</div>
-                            </button>
-                        </div>
-                        
-                        <!-- Time Increment Selector (for Same-Day mode) -->
-                        <div class="input-row" id="closest-same-day-controls">
-                            <select class="form-select" id="closest-time-increment">
-                                <option value="15">15 minutes</option>
-                                <option value="30">30 minutes</option>
-                                <option value="45">45 minutes</option>
-                                <option value="60">1 hour</option>
-                                <option value="120">2 hours</option>
-                                <option value="180">3 hours</option>
-                                <option value="240">4 hours</option>
-                                <option value="300">5 hours</option>
-                                <option value="360">6 hours</option>
-                                <option value="420">7 hours</option>
-                                <option value="480">8 hours</option>
-                                <option value="540">9 hours</option>
-                                <option value="600">10 hours</option>
-                                <option value="660">11 hours</option>
-                                <option value="720">12 hours</option>
-                                <option value="1080">18 hours</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Days Input (for Advance mode) -->
-                        <div class="input-row hidden" id="closest-advance-controls">
-                            <input type="number" class="form-input" id="closest-days" min="1" max="999" value="1" placeholder="1">
-                            <span class="input-label">Days</span>
-                        </div>
-                        
-                        <div class="alert alert-tertiary" id="closest-preview">
-                            Earliest booking right now would be at <strong>14:45</strong>.
-                        </div>
+
+                    <!-- Radio Button Options -->
+                    <div class="radio-options">
+                        <label class="radio-option active" id="same-day-option">
+                            <div class="radio-content">
+                                <span class="radio-label">Same-Day Booking</span>
+                                <span class="radio-description">Accept bookings with short notice.</span>
+                            </div>
+                        </label>
+                        <label class="radio-option" id="advance-option">
+                            <div class="radio-content">
+                                <span class="radio-label">Advance Booking</span>
+                                <span class="radio-description">Require booking days in advance.</span>
+                            </div>
+                        </label>
                     </div>
+
+                    <!-- Time Increment Selector (for Same-Day mode) -->
+                    <div class="input-row" id="same-day-controls">
+                        <select class="form-select" id="closest-time-increment">
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                            <option value="120">2 hours</option>
+                            <option value="180">3 hours</option>
+                            <option value="240">4 hours</option>
+                            <option value="300">5 hours</option>
+                            <option value="360">6 hours</option>
+                            <option value="420">7 hours</option>
+                            <option value="480">8 hours</option>
+                            <option value="540">9 hours</option>
+                            <option value="600">10 hours</option>
+                            <option value="660">11 hours</option>
+                            <option value="720">12 hours</option>
+                            <option value="1080">18 hours</option>
+                        </select>
+                    </div>
+
+                    <!-- Days Input (for Advance mode) -->
+                    <div class="input-row hidden" id="advance-controls">
+                        <input type="number" class="form-input" id="closest-days" min="1" max="999" value="1" placeholder="1">
+                        <span class="input-label">Days</span>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="preview-box" id="closest-preview">
+                        Earliest booking right now would be at <strong>14:45</strong>.
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Toggle Option -->
+                <div class="toggle-section">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="extend-bookings" checked>
+                        <span class="toggle-switch"></span>
+                        <div class="toggle-text">
+                            <span class="toggle-label">Single seating per meal period</span>
+                            <span class="toggle-description">Enable this if each meal period should only have a single seating with no table turnovers.</span>
+                        </div>
+                    </label>
                 </div>
             </div>
 
@@ -133,9 +153,9 @@
         </div>
     </div>
 
-    <!-- Japanese Booking Window Configuration Modal -->
+    <!-- Japanese Booking Configuration Modal -->
     <div class="modal-overlay" id="booking-window-modal-ja">
-        <div class="booking-window-modal-content">
+        <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
                 <h2>予約期間設定</h2>
@@ -145,95 +165,115 @@
             <!-- Modal Body -->
             <div class="modal-body">
                 <!-- Furthest Booking Section -->
-                <div class="booking-section">
+                <div class="config-section">
                     <div class="section-header">
-                        <h3>最長予約期間</h3>
+                        <label>最長予約期間</label>
+                        <p class="section-description">どのくらい先まで予約を受け付けますか？</p>
                     </div>
-                    
-                    <div class="section-content">
-                        <div class="section-description">どのくらい先まで予約できますか？</div>
-                        
-                        <!-- Unlock Type Selector -->
-                        <div class="unlock-type-selector">
-                            <button type="button" class="unlock-type-button active" id="unlock-days-ja" data-type="days">
-                                <div class="unlock-type-label">日ごと</div>
-                                <div class="unlock-type-description">毎日新しい日が利用可能になります</div>
-                            </button>
-                            <button type="button" class="unlock-type-button" id="unlock-months-ja" data-type="months">
-                                <div class="unlock-type-label">月ごと</div>
-                                <div class="unlock-type-description">毎月1日に月全体が解除されます</div>
-                            </button>
-                        </div>
-                        
-                        <!-- Time in Advance -->
-                        <div class="input-row">
-                            <input type="number" class="form-input" id="furthest-number-ja" min="1" max="999" value="1" placeholder="1">
-                            <select class="form-select" id="furthest-unit-ja">
-                                <option value="months">月</option>
-                                <option value="days">日</option>
-                            </select>
-                        </div>
-                        
-                        <div class="alert alert-tertiary" id="furthest-preview-ja">
-                            現在の最長予約可能日は<strong>12月31日</strong>です。<br>
-                            予約枠は毎日深夜0時に1日分ずつ追加されます。
-                        </div>
+
+                    <!-- Radio Button Options -->
+                    <div class="radio-options">
+                        <label class="radio-option active" id="daily-update-option-ja">
+                            <div class="radio-content">
+                                <span class="radio-label">毎日更新</span>
+                                <span class="radio-description">新しい日が毎日追加されます。</span>
+                            </div>
+                        </label>
+                        <label class="radio-option" id="monthly-update-option-ja">
+                            <div class="radio-content">
+                                <span class="radio-label">毎月更新</span>
+                                <span class="radio-description">毎月1日に全月が予約可能になります。</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Input Row -->
+                    <div class="input-row">
+                        <input type="number" class="form-input" id="furthest-number-ja" min="1" max="999" value="2" placeholder="2">
+                        <select class="form-select" id="furthest-unit-ja">
+                            <option value="months">ヶ月</option>
+                            <option value="days">日</option>
+                        </select>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="preview-box" id="furthest-preview-ja">
+                        現在の最長予約可能日は<strong>11月22日</strong>です。<br>
+                        予約枠は毎日深夜0時に1日分ずつ追加されます。
                     </div>
                 </div>
 
+                <div class="divider"></div>
+
                 <!-- Closest Booking Section -->
-                <div class="booking-section">
+                <div class="config-section">
                     <div class="section-header">
-                        <h3>最短予約期間</h3>
+                        <label>最短予約期間</label>
+                        <p class="section-description">最低何日前の予約が必要ですか？</p>
                     </div>
-                    
-                    <div class="section-content">
-                        <div class="section-description">必要な最短事前通知期間は？</div>
-                        
-                        <!-- Closest Booking Mode Selector -->
-                        <div class="unlock-type-selector">
-                            <button type="button" class="unlock-type-button active" id="closest-same-day-ja" data-type="same-day">
-                                <div class="unlock-type-label">当日予約</div>
-                                <div class="unlock-type-description">短時間での予約を受け付ける</div>
-                            </button>
-                            <button type="button" class="unlock-type-button" id="closest-advance-ja" data-type="advance">
-                                <div class="unlock-type-label">事前予約</div>
-                                <div class="unlock-type-description">日数での事前予約が必要</div>
-                            </button>
-                        </div>
-                        
-                        <!-- Time Increment Selector (for Same-Day mode) -->
-                        <div class="input-row" id="closest-same-day-controls-ja">
-                            <select class="form-select" id="closest-time-increment-ja">
-                                <option value="15">15分</option>
-                                <option value="30">30分</option>
-                                <option value="45">45分</option>
-                                <option value="60">1時間</option>
-                                <option value="120">2時間</option>
-                                <option value="180">3時間</option>
-                                <option value="240">4時間</option>
-                                <option value="300">5時間</option>
-                                <option value="360">6時間</option>
-                                <option value="420">7時間</option>
-                                <option value="480">8時間</option>
-                                <option value="540">9時間</option>
-                                <option value="600">10時間</option>
-                                <option value="660">11時間</option>
-                                <option value="720">12時間</option>
-                                <option value="1080">18時間</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Days Input (for Advance mode) -->
-                        <div class="input-row hidden" id="closest-advance-controls-ja">
-                            <input type="number" class="form-input" id="closest-days-ja" min="1" max="999" value="1" placeholder="1">
-                            <span class="input-label">日</span>
-                        </div>
-                        
-                        <div class="alert alert-tertiary" id="closest-preview-ja">
-                            現在の最短予約可能時刻は<strong>14:45</strong>です。
-                        </div>
+
+                    <!-- Radio Button Options -->
+                    <div class="radio-options">
+                        <label class="radio-option active" id="same-day-option-ja">
+                            <div class="radio-content">
+                                <span class="radio-label">当日予約</span>
+                                <span class="radio-description">短時間での予約を受け付けます。</span>
+                            </div>
+                        </label>
+                        <label class="radio-option" id="advance-option-ja">
+                            <div class="radio-content">
+                                <span class="radio-label">事前予約</span>
+                                <span class="radio-description">数日前の予約が必要です。</span>
+                            </div>
+                        </label>
                     </div>
+
+                    <!-- Time Increment Selector (for Same-Day mode) -->
+                    <div class="input-row" id="same-day-controls-ja">
+                        <select class="form-select" id="closest-time-increment-ja">
+                            <option value="15">15分</option>
+                            <option value="30">30分</option>
+                            <option value="45">45分</option>
+                            <option value="60">1時間</option>
+                            <option value="120">2時間</option>
+                            <option value="180">3時間</option>
+                            <option value="240">4時間</option>
+                            <option value="300">5時間</option>
+                            <option value="360">6時間</option>
+                            <option value="420">7時間</option>
+                            <option value="480">8時間</option>
+                            <option value="540">9時間</option>
+                            <option value="600">10時間</option>
+                            <option value="660">11時間</option>
+                            <option value="720">12時間</option>
+                            <option value="1080">18時間</option>
+                        </select>
+                    </div>
+
+                    <!-- Days Input (for Advance mode) -->
+                    <div class="input-row hidden" id="advance-controls-ja">
+                        <input type="number" class="form-input" id="closest-days-ja" min="1" max="999" value="1" placeholder="1">
+                        <span class="input-label">日</span>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="preview-box" id="closest-preview-ja">
+                        現在の最短予約可能時刻は<strong>14:45</strong>です。
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Toggle Option -->
+                <div class="toggle-section">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="extend-bookings-ja" checked>
+                        <span class="toggle-switch"></span>
+                        <div class="toggle-text">
+                            <span class="toggle-label">食事時間ごとに1回の着席</span>
+                            <span class="toggle-description">各食事時間に1回の着席のみで、テーブルの入れ替えをしない場合に有効にします。</span>
+                        </div>
+                    </label>
                 </div>
             </div>
 
@@ -248,3 +288,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

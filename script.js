@@ -3,16 +3,20 @@
 // Global state for booking configuration
 let bookingConfig = {
     furthest: {
-        unlockType: 'days', // 'days' or 'months'
-        number: 1,
+        type: 'daily', // 'daily' or 'monthly'
+        number: 2,
         unit: 'months' // 'days' or 'months'
     },
     closest: {
         mode: 'same-day', // 'same-day' or 'advance'
         timeIncrement: 15, // minutes for same-day mode
         days: 1 // for advance mode
-    }
+    },
+    extendToMealEnd: true
 };
+
+// Current language state
+let currentLanguage = 'en';
 
 // Debounce function for preview updates
 function debounce(func, wait) {
@@ -27,193 +31,251 @@ function debounce(func, wait) {
     };
 }
 
-// Initialize the application
+// Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
-
-// Track current language
-let currentLanguage = 'en'; // 'en' or 'ja'
-
-function initializeApp() {
     setupModalHandlers();
-    setupFormHandlers('en');
-    setupFormHandlers('ja');
-    setupConditionalFields('en');
-    setupConditionalFields('ja');
-    updatePreviews('en');
-    updatePreviews('ja');
-    console.log('Booking window configuration initialized');
-}
+    setupFurthestRadioHandlers();
+    setupClosestRadioHandlers();
+    setupFormHandlers();
+    updateConditionalFields();
+    updatePreviews();
+});
 
 // Modal Handlers
 function setupModalHandlers() {
-    // English modal
-    const openButtonEN = document.getElementById('open-booking-modal-en');
-    const closeButtonEN = document.getElementById('close-booking-modal');
-    const cancelButtonEN = document.getElementById('cancel-booking-config');
-    const saveButtonEN = document.getElementById('save-booking-config');
-    const modalEN = document.getElementById('booking-window-modal');
-
-    // Japanese modal
-    const openButtonJA = document.getElementById('open-booking-modal-ja');
-    const closeButtonJA = document.getElementById('close-booking-modal-ja');
-    const cancelButtonJA = document.getElementById('cancel-booking-config-ja');
-    const saveButtonJA = document.getElementById('save-booking-config-ja');
-    const modalJA = document.getElementById('booking-window-modal-ja');
-
+    // Language selection buttons
+    const openEnButton = document.getElementById('open-booking-modal-en');
+    const openJaButton = document.getElementById('open-booking-modal-ja');
+    
+    // Modal elements
+    const enModal = document.getElementById('booking-window-modal');
+    const jaModal = document.getElementById('booking-window-modal-ja');
+    
+    // Close buttons
+    const closeEnButton = document.getElementById('close-booking-modal');
+    const closeJaButton = document.getElementById('close-booking-modal-ja');
+    
+    // Cancel buttons
+    const cancelEnButton = document.getElementById('cancel-booking-config');
+    const cancelJaButton = document.getElementById('cancel-booking-config-ja');
+    
+    // Save buttons
+    const saveEnButton = document.getElementById('save-booking-config');
+    const saveJaButton = document.getElementById('save-booking-config-ja');
+    
     // Open English modal
-    if (openButtonEN) {
-        openButtonEN.addEventListener('click', function() {
-            openModal('en');
+    if (openEnButton) {
+        openEnButton.addEventListener('click', function() {
+            currentLanguage = 'en';
+            enModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
     }
-
+    
     // Open Japanese modal
-    if (openButtonJA) {
-        openButtonJA.addEventListener('click', function() {
-            openModal('ja');
+    if (openJaButton) {
+        openJaButton.addEventListener('click', function() {
+            currentLanguage = 'ja';
+            jaModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
     }
-
+    
     // Close English modal
-    if (closeButtonEN) {
-        closeButtonEN.addEventListener('click', function() { closeModal('en'); });
+    if (closeEnButton) {
+        closeEnButton.addEventListener('click', closeModal);
     }
-    if (cancelButtonEN) {
-        cancelButtonEN.addEventListener('click', function() { closeModal('en'); });
+    
+    if (cancelEnButton) {
+        cancelEnButton.addEventListener('click', closeModal);
     }
-
+    
     // Close Japanese modal
-    if (closeButtonJA) {
-        closeButtonJA.addEventListener('click', function() { closeModal('ja'); });
+    if (closeJaButton) {
+        closeJaButton.addEventListener('click', closeModal);
     }
-    if (cancelButtonJA) {
-        cancelButtonJA.addEventListener('click', function() { closeModal('ja'); });
+    
+    if (cancelJaButton) {
+        cancelJaButton.addEventListener('click', closeModal);
     }
-
-    // Save configuration - English
-    if (saveButtonEN) {
-        saveButtonEN.addEventListener('click', function() {
-            saveConfiguration('en');
+    
+    // Save buttons
+    if (saveEnButton) {
+        saveEnButton.addEventListener('click', function() {
+            console.log('Saving booking configuration:', bookingConfig);
+            alert('Configuration saved! (This is a demo)');
+            closeModal();
         });
     }
-
-    // Save configuration - Japanese
-    if (saveButtonJA) {
-        saveButtonJA.addEventListener('click', function() {
-            saveConfiguration('ja');
+    
+    if (saveJaButton) {
+        saveJaButton.addEventListener('click', function() {
+            console.log('Saving booking configuration:', bookingConfig);
+            alert('設定が保存されました！（これはデモです）');
+            closeModal();
         });
     }
-
-    // Close on overlay click - English
-    if (modalEN) {
-        modalEN.addEventListener('click', function(e) {
-            if (e.target === modalEN) {
-                closeModal('en');
+    
+    // Close modal on overlay click
+    if (enModal) {
+        enModal.addEventListener('click', function(e) {
+            if (e.target === enModal) {
+                closeModal();
             }
         });
     }
-
-    // Close on overlay click - Japanese
-    if (modalJA) {
-        modalJA.addEventListener('click', function(e) {
-            if (e.target === modalJA) {
-                closeModal('ja');
+    
+    if (jaModal) {
+        jaModal.addEventListener('click', function(e) {
+            if (e.target === jaModal) {
+                closeModal();
             }
         });
     }
-
-    // Close on ESC key
+    
+    // Close modal on ESC key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            if (modalEN && modalEN.classList.contains('show')) {
-                closeModal('en');
-            }
-            if (modalJA && modalJA.classList.contains('show')) {
-                closeModal('ja');
-            }
+            closeModal();
         }
     });
 }
 
-function openModal(lang) {
-    currentLanguage = lang;
-    const modalId = lang === 'ja' ? 'booking-window-modal-ja' : 'booking-window-modal';
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        updatePreviews(lang);
-    }
+function closeModal() {
+    const enModal = document.getElementById('booking-window-modal');
+    const jaModal = document.getElementById('booking-window-modal-ja');
+    
+    if (enModal) enModal.classList.remove('active');
+    if (jaModal) jaModal.classList.remove('active');
+    
+    document.body.style.overflow = '';
 }
 
-function closeModal(lang) {
-    const modalId = lang === 'ja' ? 'booking-window-modal-ja' : 'booking-window-modal';
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
-    }
+// Furthest Booking Radio Button Handlers
+function setupFurthestRadioHandlers() {
+    // English radio buttons
+    const dailyOption = document.getElementById('daily-update-option');
+    const monthlyOption = document.getElementById('monthly-update-option');
+    const radioButtons = document.querySelectorAll('input[name="furthest-type"]');
+
+    // Japanese radio buttons
+    const dailyOptionJa = document.getElementById('daily-update-option-ja');
+    const monthlyOptionJa = document.getElementById('monthly-update-option-ja');
+    const radioButtonsJa = document.querySelectorAll('input[name="furthest-type-ja"]');
+
+    // English handlers
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Update active state
+            dailyOption.classList.remove('active');
+            monthlyOption.classList.remove('active');
+            
+            if (this.value === 'daily') {
+                dailyOption.classList.add('active');
+                bookingConfig.furthest.type = 'daily';
+            } else if (this.value === 'monthly') {
+                monthlyOption.classList.add('active');
+                bookingConfig.furthest.type = 'monthly';
+            }
+            
+            updateConditionalFields();
+            updatePreviews();
+        });
+    });
+
+    // Japanese handlers
+    radioButtonsJa.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Update active state
+            dailyOptionJa.classList.remove('active');
+            monthlyOptionJa.classList.remove('active');
+            
+            if (this.value === 'daily') {
+                dailyOptionJa.classList.add('active');
+                bookingConfig.furthest.type = 'daily';
+            } else if (this.value === 'monthly') {
+                monthlyOptionJa.classList.add('active');
+                bookingConfig.furthest.type = 'monthly';
+            }
+            
+            updateConditionalFields();
+            updatePreviews();
+        });
+    });
 }
 
-function saveConfiguration(lang) {
-    const message = lang === 'ja' ? '予約設定が保存されました！（デモ）' : 'Booking configuration saved! (This is a demo)';
-    console.log('Saving booking configuration:', bookingConfig);
-    // Here you would typically send the configuration to your backend
-    alert(message);
-    closeModal(lang);
-}
+// Closest Booking Radio Button Handlers
+function setupClosestRadioHandlers() {
+    // English radio buttons
+    const sameDayOption = document.getElementById('same-day-option');
+    const advanceOption = document.getElementById('advance-option');
+    const radioButtons = document.querySelectorAll('input[name="closest-type"]');
 
+    // Japanese radio buttons
+    const sameDayOptionJa = document.getElementById('same-day-option-ja');
+    const advanceOptionJa = document.getElementById('advance-option-ja');
+    const radioButtonsJa = document.querySelectorAll('input[name="closest-type-ja"]');
+
+    // English handlers
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Update active state
+            sameDayOption.classList.remove('active');
+            advanceOption.classList.remove('active');
+            
+            if (this.value === 'same-day') {
+                sameDayOption.classList.add('active');
+                bookingConfig.closest.mode = 'same-day';
+            } else if (this.value === 'advance') {
+                advanceOption.classList.add('active');
+                bookingConfig.closest.mode = 'advance';
+            }
+            
+            updateConditionalFields();
+            updatePreviews();
+        });
+    });
+
+    // Japanese handlers
+    radioButtonsJa.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Update active state
+            sameDayOptionJa.classList.remove('active');
+            advanceOptionJa.classList.remove('active');
+            
+            if (this.value === 'same-day') {
+                sameDayOptionJa.classList.add('active');
+                bookingConfig.closest.mode = 'same-day';
+            } else if (this.value === 'advance') {
+                advanceOptionJa.classList.add('active');
+                bookingConfig.closest.mode = 'advance';
+            }
+            
+            updateConditionalFields();
+            updatePreviews();
+        });
+    });
+}
 
 // Form Handlers
-function setupFormHandlers(lang) {
-    const suffix = lang === 'ja' ? '-ja' : '';
-    
-    // Furthest booking inputs
-    const unlockDaysBtn = document.getElementById('unlock-days' + suffix);
-    const unlockMonthsBtn = document.getElementById('unlock-months' + suffix);
-    const furthestNumber = document.getElementById('furthest-number' + suffix);
-    const furthestUnit = document.getElementById('furthest-unit' + suffix);
+function setupFormHandlers() {
+    // English form elements
+    const furthestNumber = document.getElementById('furthest-number');
+    const furthestUnit = document.getElementById('furthest-unit');
+    const closestTimeIncrement = document.getElementById('closest-time-increment');
+    const closestDays = document.getElementById('closest-days');
+    const extendToggle = document.getElementById('extend-bookings');
 
-    // Closest booking inputs
-    const closestSameDayBtn = document.getElementById('closest-same-day' + suffix);
-    const closestAdvanceBtn = document.getElementById('closest-advance' + suffix);
-    const closestTimeIncrement = document.getElementById('closest-time-increment' + suffix);
-    const closestDays = document.getElementById('closest-days' + suffix);
+    // Japanese form elements
+    const furthestNumberJa = document.getElementById('furthest-number-ja');
+    const furthestUnitJa = document.getElementById('furthest-unit-ja');
+    const closestTimeIncrementJa = document.getElementById('closest-time-increment-ja');
+    const closestDaysJa = document.getElementById('closest-days-ja');
+    const extendToggleJa = document.getElementById('extend-bookings-ja');
 
-    // Add event listeners with debounced preview updates
-    const debouncedUpdate = debounce(() => updatePreviews(lang), 300);
+    const debouncedUpdate = debounce(() => updatePreviews(), 300);
 
-    // Furthest: Unlock type selector
-    if (unlockDaysBtn) {
-        unlockDaysBtn.addEventListener('click', function() {
-            bookingConfig.furthest.unlockType = 'days';
-            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
-            if (modal) {
-                const furthestButtons = modal.querySelectorAll('#unlock-days' + suffix + ', #unlock-months' + suffix);
-                furthestButtons.forEach(btn => btn.classList.remove('active'));
-            }
-            this.classList.add('active');
-            updateConditionalFields(lang);
-            debouncedUpdate();
-        });
-    }
-
-    if (unlockMonthsBtn) {
-        unlockMonthsBtn.addEventListener('click', function() {
-            bookingConfig.furthest.unlockType = 'months';
-            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
-            if (modal) {
-                const furthestButtons = modal.querySelectorAll('#unlock-days' + suffix + ', #unlock-months' + suffix);
-                furthestButtons.forEach(btn => btn.classList.remove('active'));
-            }
-            this.classList.add('active');
-            updateConditionalFields(lang);
-            debouncedUpdate();
-        });
-    }
-
+    // English handlers
     if (furthestNumber) {
         furthestNumber.addEventListener('input', function() {
             bookingConfig.furthest.number = parseInt(this.value) || 1;
@@ -224,35 +286,6 @@ function setupFormHandlers(lang) {
     if (furthestUnit) {
         furthestUnit.addEventListener('change', function() {
             bookingConfig.furthest.unit = this.value;
-            debouncedUpdate();
-        });
-    }
-
-    // Closest: Mode selector
-    if (closestSameDayBtn) {
-        closestSameDayBtn.addEventListener('click', function() {
-            bookingConfig.closest.mode = 'same-day';
-            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
-            if (modal) {
-                const closestButtons = modal.querySelectorAll('#closest-same-day' + suffix + ', #closest-advance' + suffix);
-                closestButtons.forEach(btn => btn.classList.remove('active'));
-            }
-            this.classList.add('active');
-            updateConditionalFields(lang);
-            debouncedUpdate();
-        });
-    }
-
-    if (closestAdvanceBtn) {
-        closestAdvanceBtn.addEventListener('click', function() {
-            bookingConfig.closest.mode = 'advance';
-            const modal = document.getElementById('booking-window-modal' + (lang === 'ja' ? '-ja' : ''));
-            if (modal) {
-                const closestButtons = modal.querySelectorAll('#closest-same-day' + suffix + ', #closest-advance' + suffix);
-                closestButtons.forEach(btn => btn.classList.remove('active'));
-            }
-            this.classList.add('active');
-            updateConditionalFields(lang);
             debouncedUpdate();
         });
     }
@@ -270,58 +303,117 @@ function setupFormHandlers(lang) {
             debouncedUpdate();
         });
     }
+
+    if (extendToggle) {
+        extendToggle.addEventListener('change', function() {
+            bookingConfig.extendToMealEnd = this.checked;
+        });
+    }
+
+    // Japanese handlers
+    if (furthestNumberJa) {
+        furthestNumberJa.addEventListener('input', function() {
+            bookingConfig.furthest.number = parseInt(this.value) || 1;
+            debouncedUpdate();
+        });
+    }
+
+    if (furthestUnitJa) {
+        furthestUnitJa.addEventListener('change', function() {
+            bookingConfig.furthest.unit = this.value;
+            debouncedUpdate();
+        });
+    }
+
+    if (closestTimeIncrementJa) {
+        closestTimeIncrementJa.addEventListener('change', function() {
+            bookingConfig.closest.timeIncrement = parseInt(this.value);
+            debouncedUpdate();
+        });
+    }
+
+    if (closestDaysJa) {
+        closestDaysJa.addEventListener('input', function() {
+            bookingConfig.closest.days = parseInt(this.value) || 1;
+            debouncedUpdate();
+        });
+    }
+
+    if (extendToggleJa) {
+        extendToggleJa.addEventListener('change', function() {
+            bookingConfig.extendToMealEnd = this.checked;
+        });
+    }
 }
+
 
 // Conditional Field Visibility
-function setupConditionalFields(lang) {
-    updateConditionalFields(lang);
-}
-
-function updateConditionalFields(lang) {
-    const suffix = lang === 'ja' ? '-ja' : '';
+function updateConditionalFields() {
+    // English elements
+    const furthestUnit = document.getElementById('furthest-unit');
+    const sameDayControls = document.getElementById('same-day-controls');
+    const advanceControls = document.getElementById('advance-controls');
     
-    // Furthest booking fields
-    const furthestUnit = document.getElementById('furthest-unit' + suffix);
-    const unlockType = bookingConfig.furthest.unlockType;
+    // Japanese elements
+    const furthestUnitJa = document.getElementById('furthest-unit-ja');
+    const sameDayControlsJa = document.getElementById('same-day-controls-ja');
+    const advanceControlsJa = document.getElementById('advance-controls-ja');
     
+    const furthestType = bookingConfig.furthest.type;
+    const closestMode = bookingConfig.closest.mode;
+    
+    // Update English furthest unit options
     if (furthestUnit) {
-        // Clear all options
         furthestUnit.innerHTML = '';
         
-        if (unlockType === 'days') {
+        if (furthestType === 'daily') {
             // Show both months and days options
-            if (lang === 'ja') {
-                furthestUnit.innerHTML = '<option value="months">月</option><option value="days">日</option>';
-            } else {
-                furthestUnit.innerHTML = '<option value="months">Months</option><option value="days">Days</option>';
-            }
-            // Restore selected unit if valid
+            furthestUnit.innerHTML = '<option value="months">Months</option><option value="days">Days</option>';
             if (bookingConfig.furthest.unit === 'months' || bookingConfig.furthest.unit === 'days') {
                 furthestUnit.value = bookingConfig.furthest.unit;
             }
-        } else if (unlockType === 'months') {
+        } else if (furthestType === 'monthly') {
             // Only show months option
-            if (lang === 'ja') {
-                furthestUnit.innerHTML = '<option value="months">月</option>';
-            } else {
-                furthestUnit.innerHTML = '<option value="months">Months</option>';
-            }
+            furthestUnit.innerHTML = '<option value="months">Months</option>';
             furthestUnit.value = 'months';
             bookingConfig.furthest.unit = 'months';
         }
     }
     
-    // Closest booking fields
-    const closestMode = bookingConfig.closest.mode;
-    const sameDayControls = document.getElementById('closest-same-day-controls' + suffix);
-    const advanceControls = document.getElementById('closest-advance-controls' + suffix);
+    // Update Japanese furthest unit options
+    if (furthestUnitJa) {
+        furthestUnitJa.innerHTML = '';
+        
+        if (furthestType === 'daily') {
+            // Show both months and days options
+            furthestUnitJa.innerHTML = '<option value="months">ヶ月</option><option value="days">日</option>';
+            if (bookingConfig.furthest.unit === 'months' || bookingConfig.furthest.unit === 'days') {
+                furthestUnitJa.value = bookingConfig.furthest.unit;
+            }
+        } else if (furthestType === 'monthly') {
+            // Only show months option
+            furthestUnitJa.innerHTML = '<option value="months">ヶ月</option>';
+            furthestUnitJa.value = 'months';
+            bookingConfig.furthest.unit = 'months';
+        }
+    }
     
+    // Update English closest booking controls
     if (closestMode === 'same-day') {
         if (sameDayControls) sameDayControls.classList.remove('hidden');
         if (advanceControls) advanceControls.classList.add('hidden');
     } else if (closestMode === 'advance') {
         if (sameDayControls) sameDayControls.classList.add('hidden');
         if (advanceControls) advanceControls.classList.remove('hidden');
+    }
+    
+    // Update Japanese closest booking controls
+    if (closestMode === 'same-day') {
+        if (sameDayControlsJa) sameDayControlsJa.classList.remove('hidden');
+        if (advanceControlsJa) advanceControlsJa.classList.add('hidden');
+    } else if (closestMode === 'advance') {
+        if (sameDayControlsJa) sameDayControlsJa.classList.add('hidden');
+        if (advanceControlsJa) advanceControlsJa.classList.remove('hidden');
     }
 }
 
@@ -349,89 +441,49 @@ function calculateLatestBooking() {
     const config = bookingConfig.furthest;
     let latestDate = new Date(now);
     
-    if (config.unlockType === 'days') {
-        // Unlock Days: Rolling window that advances daily
-        if (config.unit === 'days') {
-            // Simple: add number of days
+    if (config.type === 'daily') {
+        // Rolling window - advances by 1 day each day
+        if (config.unit === 'months') {
+            latestDate.setMonth(now.getMonth() + config.number);
+        } else if (config.unit === 'days') {
             latestDate.setDate(now.getDate() + config.number);
-        } else if (config.unit === 'months') {
-            // Convert months to approximate days (30 days per month for rolling window)
-            const daysToAdd = config.number * 30;
-            latestDate.setDate(now.getDate() + daysToAdd);
         }
-        // Set to end of day
-        latestDate.setHours(23, 59, 59, 999);
+    } else if (config.type === 'monthly') {
+        // Batch release - full months unlock on the 1st
+        const monthsAhead = config.number;
+        const targetMonth = new Date(now.getFullYear(), now.getMonth() + monthsAhead, 1);
         
-    } else if (config.unlockType === 'months') {
-        // Unlock Months: Full months unlock on 1st at midnight
-        // Determine which months are currently unlocked
-        
-        // Get the 1st of current month at midnight
-        const firstOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-        
-        // Calculate the target month (current + number of months)
-        const targetMonth = new Date(firstOfCurrentMonth);
-        targetMonth.setMonth(firstOfCurrentMonth.getMonth() + config.number);
-        
-        // The latest bookable date is the last day of the target month
-        const lastDayOfTargetMonth = getDaysInMonth(targetMonth.getFullYear(), targetMonth.getMonth());
-        latestDate = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), lastDayOfTargetMonth, 23, 59, 59, 999);
+        // Last day of the target month
+        const lastDayOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0);
+        latestDate = lastDayOfMonth;
     }
     
     return latestDate;
 }
 
-function getDaysInMonth(year, month) {
-    return new Date(year, month + 1, 0).getDate();
-}
-
-function formatDateTime(date) {
-    const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    };
-    return date.toLocaleDateString('en-US', options);
-}
-
-function formatDate(date) {
-    const options = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    };
-    return date.toLocaleDateString('en-US', options);
-}
-
-function formatTime(date) {
-    const options = {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    };
-    return date.toLocaleTimeString('en-US', options);
-}
-
-// Preview Update Logic
-function updatePreviews(lang) {
-    try {
-        const earliest = calculateEarliestBooking();
-        const latest = calculateLatestBooking();
-        
-        // Update furthest preview
-        updateFurthestPreview(latest, lang);
-        
-        // Update closest preview
-        updateClosestPreview(earliest, lang);
-        
-    } catch (error) {
-        console.error('Error updating preview:', error);
+function roundToNext15Minutes(date) {
+    const rounded = new Date(date);
+    const minutes = rounded.getMinutes();
+    const remainder = minutes % 15;
+    
+    if (remainder !== 0) {
+        rounded.setMinutes(minutes + (15 - remainder));
+        rounded.setSeconds(0);
+        rounded.setMilliseconds(0);
     }
+    
+    return rounded;
+}
+
+// Preview Updates
+function updatePreviews() {
+    const earliestDate = calculateEarliestBooking();
+    const latestDate = calculateLatestBooking();
+    
+    updateFurthestPreview(latestDate, 'en');
+    updateFurthestPreview(latestDate, 'ja');
+    updateClosestPreview(earliestDate, 'en');
+    updateClosestPreview(earliestDate, 'ja');
 }
 
 function updateFurthestPreview(latestDate, lang) {
@@ -445,8 +497,7 @@ function updateFurthestPreview(latestDate, lang) {
     let previewText = '';
     let additionalText = '';
     
-    if (config.unlockType === 'days') {
-        // Unlock Days mode: Rolling window
+    if (config.type === 'daily') {
         if (lang === 'ja') {
             const latestDateFormatted = latestDate.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' });
             previewText = `現在の最長予約可能日は<strong>${latestDateFormatted}</strong>です。`;
@@ -457,22 +508,27 @@ function updateFurthestPreview(latestDate, lang) {
             additionalText = `<br>The booking window advances by 1 day each day at midnight.`;
         }
         
-    } else if (config.unlockType === 'months') {
-        // Unlock Months mode: Full months on 1st
-        const nextMonth = new Date(latestDate);
-        nextMonth.setMonth(latestDate.getMonth() + 1);
-        const firstOfFurthestMonth = new Date(latestDate.getFullYear(), latestDate.getMonth(), 1);
-        
+    } else if (config.type === 'monthly') {
         if (lang === 'ja') {
             const latestDateFormatted = latestDate.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' });
             previewText = `現在の最長予約可能日は<strong>${latestDateFormatted}</strong>です。`;
             
+            // Calculate next month that will unlock
+            const nextMonth = new Date(latestDate);
+            nextMonth.setMonth(latestDate.getMonth() + 1);
+            const firstOfFurthestMonth = new Date(latestDate.getFullYear(), latestDate.getMonth(), 1);
+            
             const nextMonthName = nextMonth.toLocaleDateString('ja-JP', { month: 'long' });
             const unlockDate = firstOfFurthestMonth.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric' });
-            additionalText = `<br><strong>${nextMonthName}</strong>は<strong>${unlockDate}</strong>の深夜0時に予約可能になります。`;
+            additionalText = `<br><strong>${nextMonthName}</strong>は<strong>${unlockDate}</strong>の深夜0時に利用可能になります。`;
         } else {
             const latestDateFormatted = latestDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
             previewText = `Furthest booking right now would be <strong>${latestDateFormatted}</strong>.`;
+            
+            // Calculate next month that will unlock
+            const nextMonth = new Date(latestDate);
+            nextMonth.setMonth(latestDate.getMonth() + 1);
+            const firstOfFurthestMonth = new Date(latestDate.getFullYear(), latestDate.getMonth(), 1);
             
             const nextMonthName = nextMonth.toLocaleDateString('en-US', { month: 'long' });
             const unlockDate = firstOfFurthestMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
@@ -483,21 +539,6 @@ function updateFurthestPreview(latestDate, lang) {
     preview.innerHTML = previewText + additionalText;
 }
 
-function roundToNext15Minutes(date) {
-    const rounded = new Date(date);
-    const minutes = rounded.getMinutes();
-    const remainder = minutes % 15;
-    
-    if (remainder !== 0) {
-        // Round up to next 15-minute mark
-        rounded.setMinutes(minutes + (15 - remainder));
-        rounded.setSeconds(0);
-        rounded.setMilliseconds(0);
-    }
-    
-    return rounded;
-}
-
 function updateClosestPreview(earliestDate, lang) {
     const suffix = lang === 'ja' ? '-ja' : '';
     const preview = document.getElementById('closest-preview' + suffix);
@@ -506,7 +547,6 @@ function updateClosestPreview(earliestDate, lang) {
     const config = bookingConfig.closest;
     const now = new Date();
     
-    // Round to next 15-minute increment
     const roundedDate = roundToNext15Minutes(earliestDate);
     
     let previewText = '';
@@ -519,36 +559,48 @@ function updateClosestPreview(earliestDate, lang) {
         
         if (isSameDay) {
             // Show just the time
-            const timeFormatted = roundedDate.toLocaleTimeString(lang === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
             if (lang === 'ja') {
+                const timeFormatted = roundedDate.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', hour12: false });
                 previewText = `現在の最短予約可能時刻は<strong>${timeFormatted}</strong>です。`;
             } else {
+                const timeFormatted = roundedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
                 previewText = `Earliest booking right now would be at <strong>${timeFormatted}</strong>.`;
             }
         } else {
             // Show date and time
-            const dateTimeFormatted = roundedDate.toLocaleString(lang === 'ja' ? 'ja-JP' : 'en-US', { 
-                weekday: 'long', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                hour12: false 
-            });
             if (lang === 'ja') {
-                previewText = `現在の最短予約可能時刻は<strong>${dateTimeFormatted}</strong>です。`;
+                const dateTimeFormatted = roundedDate.toLocaleString('ja-JP', { 
+                    weekday: 'long', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: false 
+                });
+                previewText = `現在の最短予約可能日時は<strong>${dateTimeFormatted}</strong>です。`;
             } else {
+                const dateTimeFormatted = roundedDate.toLocaleString('en-US', { 
+                    weekday: 'long', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    hour12: false 
+                });
                 previewText = `Earliest booking right now would be <strong>${dateTimeFormatted}</strong>.`;
             }
         }
     } else if (config.mode === 'advance') {
         // Show the date
-        const dateFormatted = roundedDate.toLocaleDateString(lang === 'ja' ? 'ja-JP' : 'en-US', { 
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric'
-        });
         if (lang === 'ja') {
+            const dateFormatted = roundedDate.toLocaleDateString('ja-JP', { 
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric'
+            });
             previewText = `現在の最短予約可能日は<strong>${dateFormatted}</strong>です。`;
         } else {
+            const dateFormatted = roundedDate.toLocaleDateString('en-US', { 
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric'
+            });
             previewText = `Earliest booking right now would be <strong>${dateFormatted}</strong>.`;
         }
     }
@@ -556,32 +608,3 @@ function updateClosestPreview(earliestDate, lang) {
     preview.innerHTML = previewText;
 }
 
-function getOrdinalSuffix(n) {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return s[(v - 20) % 10] || s[v] || s[0];
-}
-
-// Export configuration for external use
-function getBookingConfiguration() {
-    return {
-        ...bookingConfig,
-        calculated: {
-            earliest: calculateEarliestBooking(),
-            latest: calculateLatestBooking()
-        }
-    };
-}
-
-// Set configuration from external source
-function setBookingConfiguration(config) {
-    bookingConfig = { ...bookingConfig, ...config };
-    updatePreviews();
-}
-
-// Make functions available globally for testing
-window.bookingWindowConfig = {
-    getConfiguration: getBookingConfiguration,
-    setConfiguration: setBookingConfiguration,
-    updatePreview: updatePreviews
-};
