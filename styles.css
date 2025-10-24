@@ -176,6 +176,13 @@ body {
     flex: 1;
 }
 
+.radio-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
 .radio-option:hover {
     background-color: var(--surface-raised);
 }
