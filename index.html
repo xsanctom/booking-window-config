@@ -57,13 +57,19 @@
                         </label>
                     </div>
 
-                    <!-- Input Row -->
-                    <div class="input-row">
+                    <!-- Input Row - Daily mode with select -->
+                    <div class="input-row" id="daily-controls">
                         <input type="number" class="form-input" id="furthest-number" min="1" max="999" value="2" placeholder="2">
                         <select class="form-select" id="furthest-unit">
                             <option value="months">Months</option>
                             <option value="days">Days</option>
                         </select>
+                    </div>
+
+                    <!-- Input Row - Monthly mode with label -->
+                    <div class="input-row hidden" id="monthly-controls">
+                        <input type="number" class="form-input" id="furthest-number-monthly" min="1" max="999" value="2" placeholder="2">
+                        <span class="input-label">Months</span>
                     </div>
 
                     <!-- Preview -->
@@ -189,13 +195,19 @@
                         </label>
                     </div>
 
-                    <!-- Input Row -->
-                    <div class="input-row">
+                    <!-- Input Row - Daily mode with select -->
+                    <div class="input-row" id="daily-controls-ja">
                         <input type="number" class="form-input" id="furthest-number-ja" min="1" max="999" value="2" placeholder="2">
                         <select class="form-select" id="furthest-unit-ja">
                             <option value="months">ヶ月</option>
                             <option value="days">日</option>
                         </select>
+                    </div>
+
+                    <!-- Input Row - Monthly mode with label -->
+                    <div class="input-row hidden" id="monthly-controls-ja">
+                        <input type="number" class="form-input" id="furthest-number-monthly-ja" min="1" max="999" value="2" placeholder="2">
+                        <span class="input-label">ヶ月</span>
                     </div>
 
                     <!-- Preview -->

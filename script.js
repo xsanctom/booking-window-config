@@ -261,6 +261,7 @@ function setupClosestRadioHandlers() {
 function setupFormHandlers() {
     // English form elements
     const furthestNumber = document.getElementById('furthest-number');
+    const furthestNumberMonthly = document.getElementById('furthest-number-monthly');
     const furthestUnit = document.getElementById('furthest-unit');
     const closestTimeIncrement = document.getElementById('closest-time-increment');
     const closestDays = document.getElementById('closest-days');
@@ -268,6 +269,7 @@ function setupFormHandlers() {
 
     // Japanese form elements
     const furthestNumberJa = document.getElementById('furthest-number-ja');
+    const furthestNumberMonthlyJa = document.getElementById('furthest-number-monthly-ja');
     const furthestUnitJa = document.getElementById('furthest-unit-ja');
     const closestTimeIncrementJa = document.getElementById('closest-time-increment-ja');
     const closestDaysJa = document.getElementById('closest-days-ja');
@@ -278,6 +280,13 @@ function setupFormHandlers() {
     // English handlers
     if (furthestNumber) {
         furthestNumber.addEventListener('input', function() {
+            bookingConfig.furthest.number = parseInt(this.value) || 1;
+            debouncedUpdate();
+        });
+    }
+
+    if (furthestNumberMonthly) {
+        furthestNumberMonthly.addEventListener('input', function() {
             bookingConfig.furthest.number = parseInt(this.value) || 1;
             debouncedUpdate();
         });
@@ -318,6 +327,13 @@ function setupFormHandlers() {
         });
     }
 
+    if (furthestNumberMonthlyJa) {
+        furthestNumberMonthlyJa.addEventListener('input', function() {
+            bookingConfig.furthest.number = parseInt(this.value) || 1;
+            debouncedUpdate();
+        });
+    }
+
     if (furthestUnitJa) {
         furthestUnitJa.addEventListener('change', function() {
             bookingConfig.furthest.unit = this.value;
@@ -350,51 +366,61 @@ function setupFormHandlers() {
 // Conditional Field Visibility
 function updateConditionalFields() {
     // English elements
-    const furthestUnit = document.getElementById('furthest-unit');
+    const dailyControls = document.getElementById('daily-controls');
+    const monthlyControls = document.getElementById('monthly-controls');
     const sameDayControls = document.getElementById('same-day-controls');
     const advanceControls = document.getElementById('advance-controls');
     
     // Japanese elements
-    const furthestUnitJa = document.getElementById('furthest-unit-ja');
+    const dailyControlsJa = document.getElementById('daily-controls-ja');
+    const monthlyControlsJa = document.getElementById('monthly-controls-ja');
     const sameDayControlsJa = document.getElementById('same-day-controls-ja');
     const advanceControlsJa = document.getElementById('advance-controls-ja');
     
     const furthestType = bookingConfig.furthest.type;
     const closestMode = bookingConfig.closest.mode;
     
-    // Update English furthest unit options
-    if (furthestUnit) {
-        furthestUnit.innerHTML = '';
-        
-        if (furthestType === 'daily') {
-            // Show both months and days options
-            furthestUnit.innerHTML = '<option value="months">Months</option><option value="days">Days</option>';
-            if (bookingConfig.furthest.unit === 'months' || bookingConfig.furthest.unit === 'days') {
-                furthestUnit.value = bookingConfig.furthest.unit;
-            }
-        } else if (furthestType === 'monthly') {
-            // Only show months option
-            furthestUnit.innerHTML = '<option value="months">Months</option>';
-            furthestUnit.value = 'months';
-            bookingConfig.furthest.unit = 'months';
+    // Update English furthest booking controls
+    if (furthestType === 'daily') {
+        if (dailyControls) dailyControls.classList.remove('hidden');
+        if (monthlyControls) monthlyControls.classList.add('hidden');
+        // Sync value from monthly to daily input
+        const monthlyInput = document.getElementById('furthest-number-monthly');
+        const dailyInput = document.getElementById('furthest-number');
+        if (monthlyInput && dailyInput && monthlyInput.value) {
+            dailyInput.value = monthlyInput.value;
+        }
+    } else if (furthestType === 'monthly') {
+        if (dailyControls) dailyControls.classList.add('hidden');
+        if (monthlyControls) monthlyControls.classList.remove('hidden');
+        bookingConfig.furthest.unit = 'months';
+        // Sync value from daily to monthly input
+        const dailyInput = document.getElementById('furthest-number');
+        const monthlyInput = document.getElementById('furthest-number-monthly');
+        if (dailyInput && monthlyInput && dailyInput.value) {
+            monthlyInput.value = dailyInput.value;
         }
     }
     
-    // Update Japanese furthest unit options
-    if (furthestUnitJa) {
-        furthestUnitJa.innerHTML = '';
-        
-        if (furthestType === 'daily') {
-            // Show both months and days options
-            furthestUnitJa.innerHTML = '<option value="months">ヶ月</option><option value="days">日</option>';
-            if (bookingConfig.furthest.unit === 'months' || bookingConfig.furthest.unit === 'days') {
-                furthestUnitJa.value = bookingConfig.furthest.unit;
-            }
-        } else if (furthestType === 'monthly') {
-            // Only show months option
-            furthestUnitJa.innerHTML = '<option value="months">ヶ月</option>';
-            furthestUnitJa.value = 'months';
-            bookingConfig.furthest.unit = 'months';
+    // Update Japanese furthest booking controls
+    if (furthestType === 'daily') {
+        if (dailyControlsJa) dailyControlsJa.classList.remove('hidden');
+        if (monthlyControlsJa) monthlyControlsJa.classList.add('hidden');
+        // Sync value from monthly to daily input
+        const monthlyInputJa = document.getElementById('furthest-number-monthly-ja');
+        const dailyInputJa = document.getElementById('furthest-number-ja');
+        if (monthlyInputJa && dailyInputJa && monthlyInputJa.value) {
+            dailyInputJa.value = monthlyInputJa.value;
+        }
+    } else if (furthestType === 'monthly') {
+        if (dailyControlsJa) dailyControlsJa.classList.add('hidden');
+        if (monthlyControlsJa) monthlyControlsJa.classList.remove('hidden');
+        bookingConfig.furthest.unit = 'months';
+        // Sync value from daily to monthly input
+        const dailyInputJa = document.getElementById('furthest-number-ja');
+        const monthlyInputJa = document.getElementById('furthest-number-monthly-ja');
+        if (dailyInputJa && monthlyInputJa && dailyInputJa.value) {
+            monthlyInputJa.value = dailyInputJa.value;
         }
     }
     
